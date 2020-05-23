@@ -112,7 +112,7 @@ class PianoFruit:
                 elif event.type == pygame.KEYUP:
                     self._handle_key_up(event)
 
-                # TODO Обработка музыки
+                # Обработка музыки
             self._play_music()
 
         return None
@@ -141,7 +141,7 @@ class PianoFruit:
         # for key in self._key_state.values():
             # if key['playable'] == True:
             #     music_playable = False
-
+        # Формирование пакета для воспроизведения
         for key in self._key_state.values():
             if not key['pressed'] and key['duration'] != 0:
                 self._data.append(
@@ -159,6 +159,10 @@ class PianoFruit:
 
         self._player.write(self._data)
         self._data = []
+
+        for key in self._key_state.values():
+            key['duration'] = 0
+            key['pressed'] = False
         return None
 
 
