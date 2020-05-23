@@ -31,7 +31,6 @@ class PianoFruit:
                 'note': 'C',
                 'midiNumber': 60,
                 'pressed': False,
-                'playable': False,
                 'duration': 0
             },
             's': {
@@ -39,7 +38,6 @@ class PianoFruit:
                 'note': 'D',
                 'midiNumber': 62,
                 'pressed': False,
-                'playable': False,
                 'duration': 0
             },
             'd': {
@@ -47,7 +45,6 @@ class PianoFruit:
                 'note': 'E',
                 'midiNumber': 64,
                 'pressed': False,
-                'playable': False,
                 'duration': 0
             },
             'f': {
@@ -55,7 +52,6 @@ class PianoFruit:
                 'note': 'F',
                 'midiNumber': 65,
                 'pressed': False,
-                'playable': False,
                 'duration': 0
             },
             'g': {
@@ -63,7 +59,6 @@ class PianoFruit:
                 'note': 'G',
                 'midiNumber': 67,
                 'pressed': False,
-                'playable': False,
                 'duration': 0
             },
             'h': {
@@ -71,7 +66,6 @@ class PianoFruit:
                 'note': 'A',
                 'midiNumber': 69,
                 'pressed': False,
-                'playable': False,
                 'duration': 0
             },
             'j': {
@@ -79,7 +73,6 @@ class PianoFruit:
                 'note': 'B',
                 'midiNumber': 71,
                 'pressed': False,
-                'playable': False,
                 'duration': 0
             }
         }
@@ -121,7 +114,6 @@ class PianoFruit:
         for key in self._key_state:
             if event.dict['unicode'] == key:
                 self._key_state[key]['pressed'] = True
-                self._key_state[key]['playable'] = True
                 self._key_state[key]['duration'] = pygame.midi.time()
 
         return None
