@@ -162,32 +162,5 @@ if __name__ == '__main__':
 
     piano = PianoFruit()
     piano.start()
-    # # размер окна pygame
-    # window_size = 320, 240
-    #
-    # # настраиваем экран
-    # screen = pygame.display.set_mode(window_size)
-    # # pygame.display.flip()
-    # pygame.midi.init()
-    # player = pygame.midi.Output(0)
-    # player.set_instrument(0)
-    #
-    # running = True
-    # while running:
-    #     # обрабатываем события
-    #     for event in pygame.event.get():
-    #         # событие закрытия окна
-    #         if event.type == pygame.QUIT:
-    #             running = False
-    #
-    #         if event.type == pygame.KEYDOWN:
-    #             if event.dict['unicode'] == 'q':
-    #                 running = False
-    #
-    # player.close()
-    # # pygame.mixer.quit()
-    # pygame.midi.quit()
-    # # закрываем окно
-    # pygame.quit()
 
 
