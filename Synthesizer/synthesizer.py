@@ -5,7 +5,7 @@ import pygame.midi
 
 
 class Synthesizer:
-    """Класс пианино."""
+    """Класс Сиетезатора."""
 
     def __init__(self):
         """Конструктор класса."""
@@ -133,11 +133,7 @@ class Synthesizer:
         return None
 
     def _play_music(self):
-        music_playable = True
 
-        # for key in self._key_state.values():
-        # if key['playable'] == True:
-        #     music_playable = False
         # Формирование пакета для воспроизведения
         for key in self._key_state.values():
             if not key['pressed'] and key['duration'] != 0:
@@ -147,10 +143,8 @@ class Synthesizer:
                             0x90,
                             key['midiNumber'],
                             64
-                            # key['duration']
                         ),
                         0
-                        # pygame.midi.time()
                     )
                 )
 
