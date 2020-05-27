@@ -1,14 +1,14 @@
-"""Синтезатор.
-
-"""
+"""Синтезатор."""
 # Импорты сторонних библиотек
 
 import pygame.midi
 
 
-class PianoFruit:
+class Synthesizer:
+    """Класс пианино."""
 
     def __init__(self):
+        """Конструктор класса."""
         # Подготовка окна
         self.window_size = (320, 240)
         self._screen = pygame.display.set_mode(self.window_size)
@@ -79,12 +79,14 @@ class PianoFruit:
         self.running = False
 
     def start(self):
+        """Старт синтезатора."""
         self.running = True
         self._loop()
-        self.stop()
+        self.quit()
         return None
 
-    def stop(self):
+    def quit(self):
+        """Отключение синтезатора."""
         self.running = False
 
         self._player.close()
@@ -122,7 +124,10 @@ class PianoFruit:
         for key in self._key_state:
             if event.key == self._key_state[key]['keyCode']:
                 self._key_state[key]['pressed'] = False
-                self._key_state[key]['duration'] = pygame.midi.time() - self._key_state[key]['duration']
+
+                self._key_state[key]['duration'] = (
+                    pygame.midi.time() - self._key_state[key]['duration'])
+
                 if self._key_state[key]['duration'] > 127:
                     self._key_state[key]['duration'] = 127
         return None
@@ -131,8 +136,8 @@ class PianoFruit:
         music_playable = True
 
         # for key in self._key_state.values():
-            # if key['playable'] == True:
-            #     music_playable = False
+        # if key['playable'] == True:
+        #     music_playable = False
         # Формирование пакета для воспроизведения
         for key in self._key_state.values():
             if not key['pressed'] and key['duration'] != 0:
@@ -160,7 +165,5 @@ class PianoFruit:
 
 if __name__ == '__main__':
 
-    piano = PianoFruit()
+    piano = Synthesizer()
     piano.start()
-
-
