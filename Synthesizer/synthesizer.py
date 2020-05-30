@@ -5,7 +5,6 @@ import re
 import pygame.midi
 import serial
 
-
 # Импорты сторонних библиотек
 # from serial.tools.list_ports import comports
 
@@ -35,23 +34,23 @@ class Synthesizer:
         )
 
         # Установка инструмента
+        # 1 - фортепиано
         self._player.set_instrument(
             instrument_id=1
         )
-        self._data = []
 
         # Настройка состояний клавиш
-        self._key_state = {
+        self._KEY_STATE = {
             'C': {
                 'key': 'a',
-                'keyCode': ord('a'),
+                'key_code': ord('a'),
                 'midiNumber': 60,
                 'pressed': False,
                 'duration': 0
             },
             'D': {
                 'key': 's',
-                'keyCode': ord('s'),
+                'key_code': ord('s'),
                 'note': 'D',
                 'midiNumber': 62,
                 'pressed': False,
@@ -59,14 +58,14 @@ class Synthesizer:
             },
             'E': {
                 'key': 'd',
-                'keyCode': ord('d'),
+                'key_code': ord('d'),
                 'midiNumber': 64,
                 'pressed': False,
                 'duration': 0
             },
             'F': {
                 'key': 'f',
-                'keyCode': ord('f'),
+                'key_code': ord('f'),
                 'note': 'F',
                 'midiNumber': 65,
                 'pressed': False,
@@ -74,15 +73,15 @@ class Synthesizer:
             },
             'G': {
                 'key': 'g',
-                'keyCode': ord('g'),
+                'key_code': ord('g'),
                 'note': 'G',
                 'midiNumber': 67,
                 'pressed': False,
                 'duration': 0
             },
             'A': {
-                'key': ' h',
-                'keyCode': ord('h'),
+                'key': 'h',
+                'key_code': ord('h'),
                 'note': 'A',
                 'midiNumber': 69,
                 'pressed': False,
@@ -90,7 +89,7 @@ class Synthesizer:
             },
             'B': {
                 'key': 'j',
-                'keyCode': ord('j'),
+                'key_code': ord('j'),
                 'note': 'B',
                 'midiNumber': 71,
                 'pressed': False,
@@ -103,8 +102,6 @@ class Synthesizer:
         """Старт синтезатора."""
         self.running = True
         self._loop()
-        self.quit()
-        # return None
 
     def quit(self):
         """Отключение синтезатора."""
@@ -113,11 +110,12 @@ class Synthesizer:
         self._player.close()
 
         pygame.quit()
-        # return None
 
     def _loop(self):
         while self.running:
+            # Работа  COM портом
             if self._ser.in_waiting > 0:
+                # if self._ser.
                 # Считываем строку из COM порта
                 line = str(self._ser.readline())
 
@@ -127,71 +125,75 @@ class Synthesizer:
                 for note_tag in note_tags:
                     if note_tag[0] != '!':
                         self._handle_key_down(note_tag[0])
-                    else:
-                        self._handle_key_up(note_tag[1])
-                for event in pygame.event.get():
-                    # Обработка выхода
-                    if event.type == pygame.QUIT:
-                        self.running = False
+                    # else:
+                        # self._handle_key_up(note_tag[1])
+            # Работа с клавишами
+            for event in pygame.event.get():
+                # Обработка выхода
+                if event.type == pygame.QUIT:
+                    self.running = False
 
-                #     # Обработка нажатий и отпускания TODO Доделать нажатия
-                #     по клавишам
-                #     if event.type == pygame.KEYDOWN:
-                #         self._handle_key_down(event.unicode.upper)
-                #     elif event.type == pygame.KEYUP:
-                #         self._handle_key_up(event.unicode.upper)
+            #     # Обработка нажатий и отпускания TODO Доделать нажатия
+            #     по клавишам
+                if event.type == pygame.KEYDOWN:
+                    if event.unicode == 'q':
+                        self.quit()
 
-                # Обработка музыки
-                self._play_music()
+                    for note in self._KEY_STATE:
+                        if event.unicode == self._KEY_STATE[note]['key']:
+                            self._handle_key_down(note)
+                # elif event.type == pygame.KEYUP:
+                    # self._handle_key_up(event.unicode.upper)
 
-        # return None
+            # Обработка музыки
+            self._play_music()
 
     def _handle_key_down(self, note):
-        for key in self._key_state:
+        for key in self._KEY_STATE:
             if note == key:
-                self._key_state[key]['pressed'] = True
-                self._key_state[key]['duration'] = pygame.midi.time()
+                self._KEY_STATE[key]['pressed'] = True
+                self._KEY_STATE[key]['duration'] = pygame.midi.time()
 
-        # return None
+    # def _handle_key_up(self, note):
+    #     for key in self._KEY_STATE:
+    #         if note == self._KEY_STATE[key]['key_code']:
+    #             self._KEY_STATE[key]['pressed'] = False
 
-    def _handle_key_up(self, note):
-        for key in self._key_state:
-            if note == self._key_state[key]['keyCode']:
-                self._key_state[key]['pressed'] = False
+    #             self._KEY_STATE[key]['duration'] = (
+    #                 pygame.midi.time() - self._KEY_STATE[key]['duration'])
 
-                self._key_state[key]['duration'] = (
-                        pygame.midi.time() - self._key_state[key]['duration'])
-
-                if self._key_state[key]['duration'] > 127:
-                    self._key_state[key]['duration'] = 127
-        # return None
+    #             if self._KEY_STATE[key]['duration'] > 127:
+    #                 self._KEY_STATE[key]['duration'] = 127
 
     def _play_music(self):
-
-        # Формирование пакета для воспроизведения
-        for key in self._key_state.values():
-            if key['pressed'] and key['duration'] != 0:
-                self._data.append(
-                    (
+        """Воспроизведение музыки."""
+        # Ппрверка, что не произошел выход из программы.
+        if not self.running:
+            return
+        else:
+            # Формирование пакета для воспроизведения
+            data = []
+            for key in self._KEY_STATE.values():
+                if key['pressed'] and key['duration'] != 0:
+                    data.append(
                         (
-                            0x90,
-                            key['midiNumber'],
-                            64
-                        ),
-                        0
+                            (
+                                0x90,
+                                key['midiNumber'],
+                                64
+                            ),
+                            0
+                        )
                     )
-                )
 
-        self._player.write(self._data)
-        self._data = []
+            self._player.write(data)
 
-        for key in self._key_state.values():
-            key['duration'] = 0
-            key['pressed'] = False
-        # return None
+            for key in self._KEY_STATE.values():
+                key['duration'] = 0
+                key['pressed'] = False
 
 
 if __name__ == '__main__':
-
     piano = Synthesizer()
     piano.start()
+    piano.quit()
