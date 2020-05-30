@@ -134,7 +134,8 @@ class Synthesizer:
                     if event.type == pygame.QUIT:
                         self.running = False
 
-                #     # Обработка нажатий и отпускания TODO Доделать нажатия по клавишам
+                #     # Обработка нажатий и отпускания TODO Доделать нажатия
+                #     по клавишам
                 #     if event.type == pygame.KEYDOWN:
                 #         self._handle_key_down(event.unicode.upper)
                 #     elif event.type == pygame.KEYUP:
