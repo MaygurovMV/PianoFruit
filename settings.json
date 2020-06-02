@@ -1,0 +1,8 @@
+{
+    "COM":
+    {
+        "is_COM_enabled": true,
+        "COM": "COM17",
+        "threshold": 1000
+    }
+}

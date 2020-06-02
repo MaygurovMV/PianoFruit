@@ -1,20 +1,40 @@
 """Фруктовое Пианино."""
 
+import json
+import re
+from os.path import exists
+
 # Импорт сторонних библиотек
 import pygame
-# from serial.tools.list_ports import comports
 import serial
-import re
-
+from time import time, sleep
 # Импорт внутренних библиотек
 from gui.gui import GUI
 from Synthesizer.synthesizer import Synthesizer
 
 
+def serial_write(ser, phrase):
+    ser.write(phrase.encode('utf8'))
+    start_time = time()
+    try:
+        while True:
+            data = ser.readline().decode('utf8')
+            if data != '':
+                return data
+            sleep(0.01)
+            if time() - start_time > 2:
+                return 'Time out'
+    except KeyboardInterrupt:
+        print('прервано пользователем')
+
+
 class _Game:
     def __init__(self):
         self._gui = GUI()
-        self.is_COM_enabled = False
+
+        with open('settings.json') as config_file:
+            self.config = json.load(config_file)
+
         self._synth = Synthesizer()
 
         self.running = False
@@ -22,16 +42,20 @@ class _Game:
     def start(self):
         self.running = True
 
-        if self.is_COM_enabled:
+        if self.config['COM']['is_COM_enabled']:
             # Подготовка COM порта
-            self._ser = serial.Serial(port='COM17', baudrate=9600)
+            self._ser = serial.Serial(
+                port=self.config['COM']['COM'],
+                baudrate=9600
+            )
+            # Ожидание загрузки bootloader-а
+            pygame.time.wait(1700)
 
-            # Считывание установленного порога
-            # self.threshold = int(
-            #     re.search(
-            #         "d{, 4}",
-            #         str(self._ser.readline()),
-            #         flags=re.ASCII))
+            self._ser.write(
+                (str(self.config['COM']['threshold'])).encode('utf-8')
+            )
+
+            print('threshold = ', self._ser.readline())
 
         self._clock = pygame.time.Clock()
 
@@ -64,7 +88,7 @@ class _Game:
                             self._synth.handle_key_up(note)
 
             if self.running:
-                if self.is_COM_enabled:
+                if self.config['COM']['is_COM_enabled']:
                     # Работа  COM портом
                     if self._ser.in_waiting > 0:
                         # if self._ser.
@@ -82,7 +106,7 @@ class _Game:
                             if note_tag[0] != '!':
                                 self._synth.handle_key_down(note_tag[0])
                             else:
-                                self._synth._handle_key_up(note_tag[1])
+                                self._synth.handle_key_up(note_tag[1])
 
                 self._gui.update(
                     self._synth.key_state
@@ -91,7 +115,7 @@ class _Game:
 
     def quit(self):
         self.running = False
-        if self.is_COM_enabled:
+        if self.config['COM']['is_COM_enabled']:
             self._ser.close()
         self._synth.close()
         pygame.quit()

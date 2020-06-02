@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project version="4">
-  <component name="PylintConfigService">
-    <option name="customPylintPath" value="E:\YandexDisk\Работа\01.19 Оценка величины воздействия взрыва двигателя МДУ на ДО МСРН при выведении МСРКН\Матмодель\venv\Scripts\pylint.exe" />
-    <option name="scanBeforeCheckin" value="false" />
-  </component>
-</project>

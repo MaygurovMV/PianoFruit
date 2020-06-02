@@ -11,23 +11,29 @@
 
 int val;
 bool isPress[7];
+bool flag_threshold = true;
 
 String outPackage;
 char note[7] = {'C', 'D', 'E', 'F', 'G', 'A', 'B'};
-
+String temp;
 int threshold = 1000;
 
 void setup() {
   //открытие порта со скоростью 9600 бод
   Serial.begin(9600);
-  while (Serial.available()>0){
-    threshold = Serial.parseInt();
-  }
-  Serial.print("Init threshold "); Serial.println(threshold);
+  
 
 }
 
 void loop() {
+  if (Serial.available()>0 && flag_threshold){
+    temp = Serial.readString();
+    threshold = temp.toInt();
+//    Serial.print("Init threshold: ");
+    Serial.println(threshold);
+    flag_threshold = false;
+  }
+  
   for (int i=0; i<=6; i++){
     val = analogRead(i+1);
     if (val  < threshold) {
