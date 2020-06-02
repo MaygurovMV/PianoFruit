@@ -13,31 +13,36 @@ from gui.gui import GUI
 from Synthesizer.synthesizer import Synthesizer
 
 
-def serial_write(ser, phrase):
-    ser.write(phrase.encode('utf8'))
-    start_time = time()
-    try:
-        while True:
-            data = ser.readline().decode('utf8')
-            if data != '':
-                return data
-            sleep(0.01)
-            if time() - start_time > 2:
-                return 'Time out'
-    except KeyboardInterrupt:
-        print('прервано пользователем')
-
-
 class _Game:
     def __init__(self):
         self._gui = GUI()
 
-        with open('settings.json') as config_file:
-            self.config = json.load(config_file)
+        try:
+            with open('settings.json') as config_file:
+                self.config = json.load(config_file)
+        except FileNotFoundError:
+            self.config = {
+                "COM":
+                {
+                        "is_COM_enabled": False,
+                        "COM": "COM17",
+                        "threshold": 1000
+                }
+            }
+            json.dump(
+                {
+                    "COM":
+                    {
+                        "is_COM_enabled": False,
+                        "COM": "COM17",
+                        "threshold": 1000
+                    }
+                },
+                open('settings.json', 'w')
+            )
+            self.running = False
 
         self._synth = Synthesizer()
-
-        self.running = False
 
     def start(self):
         self.running = True
