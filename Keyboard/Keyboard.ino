@@ -15,7 +15,6 @@ bool flag_threshold = true;
 
 String outPackage;
 char note[7] = {'C', 'D', 'E', 'F', 'G', 'A', 'B'};
-String temp;
 int threshold = 1000;
 
 void setup() {
@@ -27,10 +26,8 @@ void setup() {
 
 void loop() {
   if (Serial.available()>0 && flag_threshold){
-    temp = Serial.readString();
-    threshold = temp.toInt();
-//    Serial.print("Init threshold: ");
-    Serial.println(threshold);
+    threshold = Serial.parseInt();
+    Serial.print("Init threshold: ");Serial.println(threshold);
     flag_threshold = false;
   }
   
