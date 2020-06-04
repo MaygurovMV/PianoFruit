@@ -1,10 +1,11 @@
 """Фруктовое Пианино."""
 
-import json
-import re
-from os.path import exists
 
 # Импорт сторонних библиотек
+import json
+import re
+import sys
+import os
 import pygame
 import serial
 from time import time, sleep
@@ -15,10 +16,15 @@ from Synthesizer.synthesizer import Synthesizer
 
 class _Game:
     def __init__(self):
-        self._gui = GUI()
+        # Изменение дирректории src для pyInstaller для exe в одном файле
+        if getattr(sys, 'frozen', False):
+            os.chdir(sys._MEIPASS)
+            boundle_dir = sys.executable.replace('piano_Fruit.exe', '')
+        else:
+            boundle_dir = ''
 
         try:
-            with open('settings.json') as config_file:
+            with open(boundle_dir + 'settings.json') as config_file:
                 self.config = json.load(config_file)
         except FileNotFoundError:
             self.config = {
@@ -38,10 +44,11 @@ class _Game:
                         "threshold": 1000
                     }
                 },
-                open('settings.json', 'w')
+                open(boundle_dir + 'settings.json', 'w')
             )
             self.running = False
 
+        self._gui = GUI()
         self._synth = Synthesizer()
 
     def start(self):
@@ -126,8 +133,10 @@ class _Game:
         pygame.quit()
 
 
-game = _Game()
+if __name__ == "__main__":
 
-game.start()
+    game = _Game()
 
-game.quit()
+    game.start()
+
+    game.quit()
