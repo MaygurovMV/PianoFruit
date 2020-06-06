@@ -109,7 +109,7 @@ class _Game:
 
                         # Ищем в строке A или !A
                         note_tags = re.findall(
-                            '[!]?[A-F]',
+                            '[!]?[A-G]',
                             line,
                             flags=re.ASCII
                         )
