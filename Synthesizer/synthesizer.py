@@ -61,8 +61,8 @@ class Notes:
         :return: Note
         """
         # note_name = note_name.lower()
-        if self._notes_names.get(note_name.name, False):
-            return self._notes_names[note_name.name]
+        if self._notes_names.get(note_name, False):
+            return self._notes_names[note_name]
         else:
             raise KeyError
 
