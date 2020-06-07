@@ -52,6 +52,9 @@ class _Game:
         self._synth = Synthesizer()
 
     def start(self):
+        """
+        Arduino threshold setting and Loop starting
+        """
         self.running = True
 
         if self.config['COM']['is_COM_enabled']:
@@ -75,6 +78,9 @@ class _Game:
         self._loop()
 
     def _loop(self):
+        """
+        Main cycle
+        """
         while self.running:
             self._clock.tick(30)
             for event in pygame.event.get():
@@ -88,15 +94,15 @@ class _Game:
                         self.quit()
 
                     # Обработка нажатий и отпускания.
-                    for note in self._synth.key_state:
+                    for note in self._synth.notes:
                         if (event.key ==
-                                self._synth.key_state[note]['key_code']):
+                                self._synth.notes[note].key_code):
                             self._synth.handle_key_down(note)
 
                 if event.type == pygame.KEYUP:
-                    for note in self._synth.key_state:
+                    for note in self._synth.notes:
                         if (event.key ==
-                                self._synth.key_state[note]['key_code']):
+                                self._synth.notes[note].key_code):
                             self._synth.handle_key_up(note)
 
             if self.running:
@@ -121,7 +127,7 @@ class _Game:
                                 self._synth.handle_key_up(note_tag[1])
 
                 self._gui.update(
-                    self._synth.key_state
+                    self._synth.notes
                 )
                 self._synth.play()
 
