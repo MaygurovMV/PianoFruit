@@ -16,18 +16,38 @@ from Synthesizer.synthesizer import Synthesizer
 
 class _Game:
     def __init__(self):
-        # Изменение дирректории src для pyInstaller для exe в одном файле
+        self._get_config()
+        self._gui = GUI()
+        self._synth = Synthesizer()
+
+    @staticmethod
+    def _ch_dir() -> str:
+        """[Изменение дирректории src для pyInstaller для exe в одном файле.]
+
+        :return: Путь до директории с исполняемым файлоом.
+        :rtype: str
+        """
         if getattr(sys, 'frozen', False):
             os.chdir(sys._MEIPASS)
-            boundle_dir = sys.executable.replace('piano_Fruit.exe', '')
+            bundle_dir = sys.executable.replace('piano_Fruit.exe', '')
         else:
-            boundle_dir = ''
+            bundle_dir = ''
 
+        return bundle_dir
+
+    def _get_config(self):
+        """Взятие настроек из внешнего файла."""
+        bundle_dir = self._ch_dir()
         try:
-            with open(boundle_dir + 'settings.json') as config_file:
+            with open(bundle_dir + 'settings.json') as config_file:
                 self.config = json.load(config_file)
         except FileNotFoundError:
-            self.config = {
+            self._set_config()
+
+    def _set_config(self):
+        """Установка настроек в внешний файл."""
+        bundle_dir = self._ch_dir()
+        self.config = {
                 "COM":
                 {
                         "is_COM_enabled": False,
@@ -35,21 +55,11 @@ class _Game:
                         "threshold": 1000
                 }
             }
-            json.dump(
-                {
-                    "COM":
-                    {
-                        "is_COM_enabled": False,
-                        "COM": "COM17",
-                        "threshold": 1000
-                    }
-                },
-                open(boundle_dir + 'settings.json', 'w')
-            )
-            self.running = False
-
-        self._gui = GUI()
-        self._synth = Synthesizer()
+        json.dump(
+            self.config,
+            open(bundle_dir + 'settings.json', 'w')
+        )
+        self.running = False
 
     def start(self):
         """
