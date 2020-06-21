@@ -2,12 +2,20 @@
 
 # Импорты сторонних библиотек
 import pygame.midi
+from typing import Iterator
 
 
 class Note:
     """Note Container."""
 
     def __init__(self, *, name: str, key: str, midi_number: int):
+        """Конструктор.
+
+        Args:
+            name: Название ноты.
+            key:
+            midi_number: Номер в midi представлении.
+        """
         self.name = name
         self.key = key.lower()
         self.key_code = ord(key)
@@ -16,6 +24,7 @@ class Note:
         self.duration = 0
 
     def press(self):
+        """Нажать на клавишу."""
         if self.pressed is False:
             self.pressed = True
             self.duration = pygame.midi.time()
@@ -24,15 +33,27 @@ class Note:
             self.duration = pygame.midi.time() - self.duration
 
     def __repr__(self):
-        return f'Note "{self.name}". Pressing by key "{self.key}". Has midiNumber: {self.midiNumber}'
+        """Магический метод для преставления класса в удобном виде.
+
+        Returns:
+            str: Представление класса в удобном виде.
+        """
+        return (
+            f'Note {self.name}' +
+            f'. Pressing by key {self.key}' +
+            f'. Has midiNumber: {self.midiNumber}')
 
 
 class Notes:
+    """Набор нот."""
+
     def __init__(self, *notes):
-        self._notes_names = {note.name: note for note in notes}  # Use note.key if using note's key instead note's name
+        """Конструктор."""
+        self._notes_names = {note.name: note for note in notes}
 
     def key_down(self, note_name: str):
         """Обработчик нажатий клавиш.
+
         :param note_name: Нота
         """
         # self._notes_names[key_pressed].pressed = True
@@ -42,21 +63,20 @@ class Notes:
 
     def key_up(self, note_name: str):
         """Обработчик отжатий клавиш.
+
         :param note_name: Нота
         """
-
         self[note_name].press()
 
     def reset(self):
-        """
-        Resets all notes
-        """
+        """Reset all notes."""
         for note in self:
             note.duration = 0
 
     def __getitem__(self, note_name: str) -> Note:
-        """
-        Return note based on name. Use indices (e.g Notes['A'])
+        """Return note based on name.
+
+        Use indices (e.g Notes['A'])
         :param note_name:
         :return: Note
         """
@@ -74,7 +94,7 @@ class Notes:
         """
         raise KeyError
 
-    def __iter__(self) -> iter:
+    def __iter__(self) -> Iterator:
         """Return iterator of notes.
 
         :return:
@@ -149,10 +169,3 @@ class Synthesizer:
         self._player.write(data)
 
         self.notes.reset()
-            # key['pressed'] = False
-
-
-if __name__ == '__main__':
-    piano = Synthesizer()
-    piano.start()
-    piano.quit()

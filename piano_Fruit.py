@@ -8,14 +8,16 @@ import sys
 import os
 import pygame
 import serial
-from time import time, sleep
 # Импорт внутренних библиотек
 from gui.gui import GUI
 from Synthesizer.synthesizer import Synthesizer
 
 
-class _Game:
+class Game:
+    """Игра."""
+
     def __init__(self):
+        """Конструктор."""
         self.running = True
         self._get_config()
         self._gui = GUI()
@@ -23,7 +25,7 @@ class _Game:
 
     @staticmethod
     def _ch_dir() -> str:
-        """Изменение дирректории src для pyInstaller для exe в одном файле.
+        """Изменение дирректории src для pyInstaller для exe в одном фойле.
 
         :return: Путь до директории с исполняемым файлом.
         :rtype: str
@@ -95,6 +97,7 @@ class _Game:
         """Start main cycle."""
         while self.running:
             self._clock.tick(30)
+
             for event in pygame.event.get():
                 # Обработка выхода
                 if event.type == pygame.QUIT:
@@ -143,6 +146,7 @@ class _Game:
                 self._synth.play()
 
     def quit(self):
+        """Выход из игры."""
         self.running = False
         if self.config['COM'].getboolean('is_COM_enabled'):
             self._ser.close()
@@ -152,7 +156,7 @@ class _Game:
 
 if __name__ == "__main__":
 
-    game = _Game()
+    game = Game()
 
     game.start()
 

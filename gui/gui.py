@@ -34,6 +34,7 @@ class GUI:
             'gui\\src\\images\\Right key.png').convert_alpha()
 
         # Словарь изображений клавиш
+        # TODO Заменить на классы
         self._key_images = {
             'C': {
                 'key_up': left_key.copy(),
